@@ -48,25 +48,24 @@ function parseTextualDB(text: string) {
     .filter(l => l !== "")
 
   lines.forEach(line => {
-    // Match: TableName ( ...attributes... )
+
     const match = line.match(/^(.+?)\s*\((.+)\)\s*$/)
     if (!match) return
 
     const tableName = match[1].trim()
     const rawAttrs  = match[2]
 
-    // ── Collect PKs: everything inside <u>…</u> ──────────────────
+
     const pkSet = new Set<string>()
     const uMatches = [...rawAttrs.matchAll(/<u>([\s\S]*?)<\/u>/g)]
     uMatches.forEach(m => {
       m[1]
         .split(",")
-        .map(a => a.replace(/\s*#\s*/g, "").trim())   // strip # and spaces
+        .map(a => a.replace(/\s*#\s*/g, "").trim())   
         .filter(Boolean)
         .forEach(a => pkSet.add(a))
     })
 
-    // ── Strip <u> tags, then split on commas ─────────────────────
     const cleanAttrs = rawAttrs.replace(/<\/?u>/g, "").split(",")
 
     const attributes: Attribute[] = cleanAttrs
@@ -164,11 +163,6 @@ function handleImport() {
   // Save HTML for the "modifier" feature
   setTextSchema(editor.innerHTML)
 
-  // Walk the DOM and produce a plain-text string where:
-  //   • <u>…</u>  is kept as literal "<u>…</u>" for the parser
-  //   • <div>, <p> each start a new line
-  //   • <br>       emits a newline
-  //   • all other tags are transparent (recurse into children)
   function nodeToText(node: ChildNode): string {
     if (node.nodeType === Node.TEXT_NODE) {
       return node.textContent ?? ""
@@ -183,16 +177,14 @@ function handleImport() {
     if (tag === "br") {
       return "\n"
     }
-    // Block elements: wrap children in newlines so each becomes its own line
     if (tag === "div" || tag === "p") {
       const inner = Array.from(el.childNodes).map(nodeToText).join("")
       return "\n" + inner
     }
-    // Transparent elements (span, b, strong, font, …)
     return Array.from(el.childNodes).map(nodeToText).join("")
   }
 
-  // Build the full text from the editor, then split into clean lines
+
   const rawText = Array.from(editor.childNodes).map(nodeToText).join("")
   const lines = rawText
     .split("\n")
@@ -207,7 +199,7 @@ function handleImport() {
     setDbName(result.tables[0].name + "DB")
   }
 
-  // Build the DatabaseDef
+
   const newDatabase: DatabaseDef = {
     name: dbName.trim() || "Schema texte",
     tables: result.tables.map((t: Table, ti: number) => ({
@@ -224,7 +216,7 @@ function handleImport() {
     }))
   }
 
-  // Link each FK field to its parent table's matching PK (exact name match)
+
   newDatabase.tables.forEach((table) => {
     table.fields.forEach((field) => {
       if (!field.isForeignKey) return
@@ -259,7 +251,7 @@ function handleImport() {
 // TAB 3 FUNCTION
 const generateFromJson = () => {
   console.log("Generate diagram from JSON")
-  // you will parse the uploaded JSON here
+
   setView("diagram")
 }
   type EditorTab = "form" | "text" | "import"
@@ -277,10 +269,10 @@ const generateFromJson = () => {
   setLoaded(true)
 }, [])
 useEffect(() => {
-  // Only restore when the form view is fully mounted AND we're on the text tab
+
   if (view !== "form" || activeTab !== "text") return
   if (!textSchema) return
-  // Use rAF to guarantee the contentEditable div has mounted before writing
+
   const raf = requestAnimationFrame(() => {
     if (editorRef.current) {
       editorRef.current.innerHTML = textSchema
@@ -604,7 +596,7 @@ function exportPNG() {
         </div>
       )}
 
-      {/* Form View */}
+      {}
       {view === "form" && (
         <div className="max-w-2xl mx-auto px-4 py-8">
           <div className="mb-6">
@@ -617,7 +609,7 @@ function exportPNG() {
             </button>
           </div>
           <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-lg">
-            {/* Decorative form header */}
+            {}
             <div className="bg-gradient-to-r from-primary/20 via-primary/10 to-transparent px-6 py-5 border-b border-border/50">
               <div className="flex items-center gap-3">
                 <div className="flex items-center justify-center h-10 w-10 rounded-xl bg-primary/20 border border-primary/30">
@@ -639,7 +631,7 @@ function exportPNG() {
               </div>
             </div>
 
-            {/* Step indicators */}
+            {}
             <div className="px-6 py-3 bg-secondary/30 border-b border-border/30 flex items-center gap-6 text-xs">
               <div className="flex flex-wrap items-center gap-2">
                 <span className="flex items-center justify-center h-5 w-5 rounded-full bg-primary text-primary-foreground text-[10px] font-bold">1</span>
@@ -787,14 +779,14 @@ function exportPNG() {
 
     </div>
 
-    {/* FILE PREVIEW */}
+    {
     {uploadedFileName && (
       <div className="flex items-center gap-2 text-green-500 text-sm">
         ✓ {uploadedFileName} chargé
       </div>
     )}
 
-    {/* ERROR MESSAGE */}
+    {}
     {jsonError && (
       <div className="text-red-500 text-sm">
         {jsonError}
@@ -812,10 +804,10 @@ function exportPNG() {
         </div>
       )}
 
-      {/* Diagram View */}
+      {}
       {view === "diagram" && database && (
         <div className="flex flex-col lg:flex-row h-[calc(100vh-60px)]  ">
-          {/* Cardinality Panel */}
+          {}
           {showCardinality && (
             <div className="w-full lg:w-80 border-b lg:border-b-0 lg:border-r border-border bg-card p-4 overflow-y-auto flex-shrink-0 ">
               <div className="flex items-center justify-between mb-4">
@@ -838,12 +830,12 @@ function exportPNG() {
             </div>
           )}
 
-          {/* Diagram Area */}
+          {}
           <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
 
-            {/* ── Diagram toolbar ── */}
+            {}
             <div className="flex items-center gap-2 px-4 py-2 border-b border-border/60 bg-card/70 backdrop-blur-sm flex-shrink-0 flex-wrap">
-              {/* DB name + stats */}
+              {}
               <div className="flex items-center gap-2 mr-2">
                 <span className="text-primary font-mono text-sm font-bold leading-none">
                   {database.name}
@@ -855,10 +847,10 @@ function exportPNG() {
                 </span>
               </div>
 
-              {/* Divider */}
+              {}
               <div className="h-4 w-px bg-border hidden sm:block" />
 
-              {/* Layout buttons */}
+              {}
               <div className="flex items-center gap-1">
                 <span className="text-xs text-muted-foreground mr-1 hidden sm:inline">Disposition :</span>
                 {(["auto", "grid", "wide"] as const).map((mode) => {
@@ -875,10 +867,10 @@ function exportPNG() {
                 })}
               </div>
 
-              {/* Spacer */}
+              {}
               <div className="flex-1" />
 
-              {/* Legend — inline, no floating overlay */}
+              {}
               <div className="hidden md:flex items-center gap-3 text-xs text-muted-foreground">
                 <span className="flex items-center gap-1">
                   <span className="font-mono font-bold text-primary bg-primary/10 px-1 py-0.5 rounded text-[10px]">PK</span>
@@ -895,7 +887,7 @@ function exportPNG() {
               </div>
             </div>
 
-            {/* ── Canvas ── */}
+            {}
             <div className="flex-1 min-h-0 overflow-hidden">
               <SchemaDiagram database={database} relations={relations} />
             </div>
