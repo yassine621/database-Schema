@@ -1,0 +1,467 @@
+/* ============================================================
+   mobile.css — DB Schema Designer · Mobile Responsiveness
+   Import this in app/globals.css AFTER the existing imports:
+     @import './mobile.css';
+   or place it in app/ and import in layout/globals.
+   ============================================================ */
+
+/* ── 1. BASE TOUCH IMPROVEMENTS ─────────────────────────── */
+* {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation; /* prevent 300ms delay on buttons */
+}
+
+/* Give interactive elements a minimum touch target of 44×44 px */
+button,
+[role="button"],
+a,
+label[for],
+input[type="file"] + label {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* ── 2. HEADER ───────────────────────────────────────────── */
+@media (max-width: 768px) {
+
+  /* Shrink the sticky header so it doesn't eat vertical space */
+  header .max-w-screen-2xl {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    gap: 0.5rem;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+  }
+
+  /* App title block */
+  header h1 {
+    font-size: 0.95rem;
+    line-height: 1.2;
+  }
+
+  header p.text-xs {
+    display: none; /* hide subtitle on very small screens */
+  }
+
+  /* Icon container */
+  header .h-9.w-9 {
+    height: 2rem;
+    width: 2rem;
+    flex-shrink: 0;
+  }
+
+  /* Button row in header — allow wrapping but stay compact */
+  header .flex.flex-wrap.items-center.gap-2 {
+    gap: 0.25rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    max-width: calc(100vw - 8rem); /* don't push title off-screen */
+  }
+
+  /* Diagram-view header buttons: icon-only on phones */
+  header button span,
+  header a span {
+    /* keep text but make it smaller */
+    font-size: 0.65rem;
+  }
+
+  /* Collapse export + save buttons to icon-only */
+  header .border-border.text-foreground {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+
+  /* Make "Nouvelle Base" button compact */
+  header .bg-primary {
+    padding-left: 0.6rem;
+    padding-right: 0.6rem;
+  }
+}
+
+/* Extra-small: hide button labels, keep only icons */
+@media (max-width: 480px) {
+  /* Hide text nodes inside header buttons — keep icons */
+  header button > svg ~ *,
+  header a > svg ~ * {
+    display: none;
+  }
+
+  header button,
+  header a.border-border {
+    padding-left: 0.45rem;
+    padding-right: 0.45rem;
+    min-width: 36px;
+  }
+
+  /* "Nouvelle Base" keep a short label */
+  header .bg-primary.text-primary-foreground > svg ~ span {
+    display: inline; /* override the hide-all above */
+    font-size: 0.65rem;
+  }
+}
+
+
+/* ── 3. EMPTY STATE ──────────────────────────────────────── */
+@media (max-width: 768px) {
+  /* Reduce massive padding and icon */
+  .flex.items-center.justify-center.min-h-\[calc\(100vh-60px\)\] {
+    padding: 1.5rem 1rem;
+    align-items: flex-start;
+    padding-top: 2.5rem;
+  }
+
+  .flex.flex-col.items-center.gap-8.max-w-lg {
+    gap: 1.25rem;
+  }
+
+  /* Decorative icon rings — shrink */
+  .relative .h-24.w-24 {
+    height: 4rem;
+    width: 4rem;
+  }
+
+  .relative .absolute.inset-0.h-24.w-24 {
+    height: 4rem;
+    width: 4rem;
+  }
+
+  .h-11.w-11 {
+    height: 2.25rem;
+    width: 2.25rem;
+  }
+
+  /* Title */
+  .text-3xl.font-bold {
+    font-size: 1.5rem;
+  }
+
+  /* Feature grid — 3 cols is fine but shrink padding */
+  .grid.grid-cols-3.gap-4 {
+    gap: 0.5rem;
+  }
+
+  .grid.grid-cols-3.gap-4 > div {
+    padding: 0.6rem 0.25rem;
+  }
+
+  /* CTA button */
+  .h-12.px-8.text-base {
+    height: 2.75rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    font-size: 0.9rem;
+  }
+}
+
+
+/* ── 4. FORM VIEW ────────────────────────────────────────── */
+@media (max-width: 768px) {
+
+  /* Outer container */
+  .max-w-2xl.mx-auto.px-4.py-8 {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  /* Back button */
+  .mb-6 {
+    margin-bottom: 0.75rem;
+  }
+
+  /* Form card header */
+  .px-6.py-5.border-b {
+    padding: 0.75rem 1rem;
+  }
+
+  /* Icon in form card header */
+  .h-10.w-10.rounded-xl {
+    height: 2.25rem;
+    width: 2.25rem;
+    flex-shrink: 0;
+  }
+
+  /* Form card title */
+  .text-foreground.text-lg.font-bold {
+    font-size: 1rem;
+  }
+
+  /* Step indicators bar */
+  .px-6.py-3.bg-secondary\/30 {
+    padding: 0.5rem 0.75rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap;
+  }
+
+  /* Step indicator items */
+  .px-6.py-3.bg-secondary\/30 .flex.flex-wrap.items-center.gap-2 {
+    flex-shrink: 0;
+    flex-wrap: nowrap;
+  }
+
+  .px-6.py-3.bg-secondary\/30 .flex.flex-wrap.items-center.gap-2 span:last-child {
+    font-size: 0.65rem;
+    white-space: nowrap;
+  }
+
+  /* Divider lines between steps */
+  .h-px.flex-1.bg-border.max-w-6 {
+    max-width: 1rem;
+    min-width: 0.5rem;
+  }
+
+  /* Tab content area */
+  .p-6 {
+    padding: 0.75rem;
+  }
+
+  /* Tab buttons row — make them smaller and fit on one line */
+  .flex.gap-2.mb-6.border-b {
+    gap: 0.25rem;
+    margin-bottom: 0.75rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap;
+    padding-bottom: 0.5rem;
+  }
+
+  .flex.gap-2.mb-6.border-b button {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    flex-shrink: 0;
+    min-height: 36px;
+  }
+
+  /* Text schema editor */
+  #schema-text {
+    height: 50vw;
+    min-height: 160px;
+    max-height: 280px;
+    font-size: 0.8rem;
+  }
+
+  /* Import JSON drop zone */
+  .w-full.max-w-md.border-2.border-dashed {
+    padding: 1.5rem 1rem;
+  }
+}
+
+
+/* ── 5. DIAGRAM VIEW ─────────────────────────────────────── */
+@media (max-width: 768px) {
+
+  /* Full-height diagram wrapper */
+  .flex.flex-col.lg\:flex-row.h-\[calc\(100vh-60px\)\] {
+    height: calc(100dvh - 52px); /* dynamic viewport height; header ~52px on mobile */
+    flex-direction: column;
+  }
+
+  /* ── Cardinality panel: slide-in sheet at bottom ── */
+  .w-full.lg\:w-80.border-b.lg\:border-b-0 {
+    width: 100%;
+    max-height: 45vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    border-bottom: 1px solid var(--border);
+    padding: 0.75rem;
+    flex-shrink: 0;
+  }
+
+  /* ── Diagram canvas: takes remaining height, scrolls in both axes ── */
+  .flex-1.touch-pan-x.touch-pan-y.overflow-auto.relative {
+    flex: 1 1 0%;
+    min-height: 0;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x pan-y;
+    position: relative;
+  }
+
+  /* ── Legend: move to bottom-right, make smaller ── */
+  .absolute.top-4.right-4.z-10.bg-card\/90 {
+    top: auto;
+    bottom: 0.75rem;
+    right: 0.75rem;
+    padding: 0.5rem 0.6rem;
+    font-size: 0.7rem;
+  }
+
+  .absolute.top-4.right-4.z-10 h4 {
+    font-size: 0.7rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .absolute.top-4.right-4.z-10 .flex.flex-col.gap-1\.5 {
+    gap: 0.35rem;
+  }
+
+  /* ── DB name badge: compact ── */
+  .absolute.top-4.left-4.z-10 .bg-card\/90 {
+    padding: 0.3rem 0.6rem;
+  }
+
+  .absolute.top-4.left-4.z-10 .font-mono.text-sm {
+    font-size: 0.75rem;
+  }
+
+  .absolute.top-4.left-4.z-10 .text-muted-foreground.text-xs {
+    font-size: 0.65rem;
+  }
+}
+
+
+/* ── 6. SCHEMA DIAGRAM SVG & TABLES ─────────────────────── */
+/*
+   The SchemaDiagram component renders an SVG with foreignObject
+   table nodes. We make the whole SVG canvas scrollable and the
+   tables finger-friendly.
+*/
+
+@media (max-width: 768px) {
+
+  /* Ensure the SVG wrapper fills & scrolls */
+  .flex-1.touch-pan-x.touch-pan-y.overflow-auto svg,
+  .flex-1.overflow-auto svg {
+    /* Let SVG be as large as it naturally is; container scrolls */
+    min-width: max-content;
+    display: block;
+  }
+
+  /* ── Table cards inside SVG foreignObject ── */
+  /* The diagram renders table nodes as foreignObject > div */
+  .schema-table,
+  foreignObject > div,
+  [data-table-node] {
+    min-width: 130px !important;
+    max-width: 200px !important;
+    font-size: 0.72rem !important;
+  }
+
+  /* Table header row */
+  .schema-table-header,
+  foreignObject > div > div:first-child {
+    padding: 0.4rem 0.5rem !important;
+    font-size: 0.72rem !important;
+  }
+
+  /* Field rows */
+  .schema-table-field,
+  foreignObject > div > div:not(:first-child) {
+    padding: 0.3rem 0.5rem !important;
+    font-size: 0.68rem !important;
+    min-height: 28px; /* finger-friendly row height */
+    display: flex;
+    align-items: center;
+  }
+
+  /* PK / FK badges */
+  .schema-table .font-mono,
+  foreignObject span.font-mono {
+    font-size: 0.6rem !important;
+    padding: 0.1rem 0.25rem !important;
+  }
+}
+
+
+/* ── 7. SCROLLBAR STYLING (thin, touch-friendly) ─────────── */
+@media (max-width: 768px) {
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 2px;
+  }
+}
+
+
+/* ── 8. ALERT DIALOG (full-screen on mobile) ─────────────── */
+@media (max-width: 768px) {
+  [role="alertdialog"],
+  [data-radix-alert-dialog-content] {
+    width: calc(100vw - 2rem) !important;
+    max-width: 100% !important;
+    margin: 0 1rem;
+  }
+}
+
+
+/* ── 9. PREVENT ZOOM ON INPUT FOCUS (iOS) ────────────────── */
+@media (max-width: 768px) {
+  input,
+  textarea,
+  select,
+  [contenteditable] {
+    font-size: 16px !important; /* iOS only zooms when font-size < 16px */
+  }
+
+  /* But keep monospace editor readable */
+  #schema-text {
+    font-size: 14px !important;
+    line-height: 1.5;
+  }
+}
+
+
+/* ── 10. UTILITY: hide on mobile, show on desktop ─────────── */
+@media (max-width: 768px) {
+  .hide-mobile {
+    display: none !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .show-mobile-only {
+    display: none !important;
+  }
+}
+
+
+/* ── 11. DIAGRAM CONTAINER — explicit horizontal scroll hint ── */
+@media (max-width: 768px) {
+  /* Wrap around SchemaDiagram to guarantee horizontal scroll */
+  .diagram-scroll-wrapper {
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x pan-y;
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+
+  /* Scroll indicator hint (fade) */
+  .diagram-scroll-wrapper::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 24px;
+    background: linear-gradient(to left, var(--background) 0%, transparent 100%);
+    pointer-events: none;
+    opacity: 0.6;
+  }
+}
+
+
+/* ── 12. SAFE AREA (notch / home-bar devices) ─────────────── */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  @media (max-width: 768px) {
+    main {
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    header {
+      padding-top: env(safe-area-inset-top);
+    }
+  }
+}
