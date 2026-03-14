@@ -8,7 +8,6 @@ interface SchemaDiagramProps {
   relations: Relation[]
 }
 
-// ── Runtime hook — reacts to actual window width ──────────────────────────────
 function useIsMobile() {
   const [isMobile, setIsMobile] = useState(false)
   useEffect(() => {
@@ -20,7 +19,7 @@ function useIsMobile() {
   return isMobile
 }
 
-// ── Dimension helpers — driven by isMobile at render time ─────────────────────
+
 function getTableWidth(m: boolean)    { return m ? 160 : 250 }
 function getHeaderHeight(m: boolean)  { return m ? 28  : 40  }
 function getFieldHeight(m: boolean)   { return m ? 22  : 34  }
@@ -32,7 +31,7 @@ function tableHeight(fieldCount: number, m: boolean) {
 
 type LayoutMode = "auto" | "grid" | "wide"
 
-// ── Grid layout ───────────────────────────────────────────────────────────────
+
 function gridLayout(
   database: DatabaseDef,
   isMobile: boolean
@@ -86,7 +85,7 @@ function autoLayout(
   const n    = tables.length
   const avgH = tables.reduce((s, t) => s + tableHeight(t.fields.length, isMobile), 0) / n
 
-  // ── Build edge list + parent/child maps ───────────────────────────────────
+
   type Edge = { a: number; b: number }
   const edges: Edge[]  = []
   const adjSet         = new Set<string>()
@@ -104,7 +103,7 @@ function autoLayout(
     childrenOf.get(ti)?.add(fi)
   })
 
-  // ── Phase 1: Sugiyama layer assignment ────────────────────────────────────
+
   const layer = new Array(n).fill(0)
   const roots = tables.map((_, i) => i).filter(i => (parentsOf.get(i)?.size ?? 0) === 0)
   const bfsQ  = roots.length > 0 ? [...roots] : [0]
@@ -119,8 +118,7 @@ function autoLayout(
   const byLayer: number[][] = Array.from({ length: maxLayer + 1 }, () => [])
   tables.forEach((_, i) => byLayer[layer[i]].push(i))
 
-  // Seed: spread layers vertically, tables horizontally — use wide spacing
-  // so the simulation has room to breathe and lines don't start tangled
+
   const layerSpacingY = isMobile ? 240 : 320
   const tableSpacingX = isMobile ? 230 : 380
   const px = new Array(n).fill(0)
@@ -133,18 +131,16 @@ function autoLayout(
     })
   })
 
-  // ── Phase 2: Force-directed refinement ───────────────────────────────────
-  // Use box-aware repulsion so taller tables get more personal space,
-  // and a stronger hierarchy bias to keep parents clearly above children.
+
   const vx     = new Array(n).fill(0)
   const vy     = new Array(n).fill(0)
-  // Add generous padding around each table so cardinality labels have room
+
   const boxW   = TW      + (isMobile ? 80 : 160)
   const boxH   = avgH    + (isMobile ? 70 : 130)
   const k_rep  = isMobile ? 20000 : 55000
   const k_spr  = 0.018
-  const k_hier = 0.040   // strong — parents stay clearly above children
-  const ideal  = isMobile ? 280 : 420  // longer ideal spring = more spacing = clearer lines
+  const k_hier = 0.040   
+  const ideal  = isMobile ? 280 : 420 
   const ITERS  = 380
 
   for (let iter = 0; iter < ITERS; iter++) {
@@ -152,7 +148,6 @@ function autoLayout(
     const fx   = new Array(n).fill(0)
     const fy2  = new Array(n).fill(0)
 
-    // Repulsion
     for (let i = 0; i < n; i++) {
       for (let j = i + 1; j < n; j++) {
         const dx = px[i]-px[j], dy = py[i]-py[j]
@@ -166,7 +161,7 @@ function autoLayout(
       }
     }
 
-    // Spring attraction (connected pairs only)
+
     edges.forEach(({ a, b }) => {
       const dx = px[b]-px[a], dy = py[b]-py[a]
       const dist = Math.sqrt(dx*dx + dy*dy) || 1
@@ -175,10 +170,9 @@ function autoLayout(
       fx[b] -= f*dx/dist;  fy2[b] -= f*dy/dist
     })
 
-    // Hierarchy bias: push FK child below PK parent
+
     edges.forEach(({ a, b }) => {
-      // a = FK side (child), b = PK side (parent)
-      // Desired: py[a] > py[b] by at least layerSpacingY * 0.55
+
       const desiredGap = layerSpacingY * 0.55
       const actualGap  = py[a] - py[b]
       const err = desiredGap - actualGap
@@ -186,7 +180,7 @@ function autoLayout(
       fy2[b] -= k_hier * err
     })
 
-    // Lateral separation bias: push unconnected tables on the same layer apart
+
     byLayer.forEach((nodes) => {
       for (let ii = 0; ii < nodes.length; ii++) {
         for (let jj = ii + 1; jj < nodes.length; jj++) {
@@ -212,7 +206,6 @@ function autoLayout(
     }
   }
 
-  // ── Phase 3: Crossing minimization (pairwise swap) ────────────────────────
   function segsCross(
     ax: number, ay: number, bx: number, by: number,
     cx: number, cy: number, dx: number, dy: number
@@ -248,7 +241,6 @@ function autoLayout(
     }
   }
 
-  // ── Phase 4: Overlap removal ──────────────────────────────────────────────
   const padX = isMobile ? 28 : 55, padY = isMobile ? 22 : 40
   for (let pass = 0; pass < 16; pass++) {
     for (let i = 0; i < n; i++) {
@@ -311,7 +303,7 @@ export const SchemaDiagram = forwardRef<SVGSVGElement, SchemaDiagramProps>(
   const HH  = getHeaderHeight(isMobile)
   const FH  = getFieldHeight(isMobile)
   const BCW = getBadgeColWidth(isMobile)
-  const CHAR_W = isMobile ? 6.2 : 8.5   // approx px per monospace char
+  const CHAR_W = isMobile ? 6.2 : 8.5  
 
   // ── Export helpers ────────────────────────────────────────────────────────
   function downloadSVG() {
@@ -358,7 +350,6 @@ export const SchemaDiagram = forwardRef<SVGSVGElement, SchemaDiagramProps>(
   } | null>(null)
   const [svgSize, setSvgSize] = useState({ width: 1200, height: 800 })
 
-  // Register layout switcher so page.tsx toolbar buttons work
   useEffect(() => {
     ;(window as any).__diagramSetLayout = (mode: LayoutMode) => {
       setLayoutMode(mode)
@@ -404,7 +395,6 @@ export const SchemaDiagram = forwardRef<SVGSVGElement, SchemaDiagramProps>(
     setSvgSize({ width: maxX, height: maxY })
   }, [positions, database, TW, HH, FH])
 
-  // ── Mouse drag (desktop) ──────────────────────────────────────────────────
   const handleMouseDown = useCallback((e: React.MouseEvent, tableId: string) => {
     const svg = svgRef.current; if (!svg) return
     const CTM = svg.getScreenCTM(); if (!CTM) return
@@ -449,7 +439,7 @@ export const SchemaDiagram = forwardRef<SVGSVGElement, SchemaDiagramProps>(
 
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
     if (!dragging || e.touches.length !== 1) return
-    e.preventDefault()    // stop page scroll only while dragging a table
+    e.preventDefault()  
     e.stopPropagation()
     const touch = e.touches[0]
     const svg   = svgRef.current; if (!svg) return
@@ -468,7 +458,6 @@ export const SchemaDiagram = forwardRef<SVGSVGElement, SchemaDiagramProps>(
 
   const handleTouchEnd = useCallback(() => setDragging(null), [])
 
-  // ── FK lookup set ─────────────────────────────────────────────────────────
   const foreignKeys = useMemo(() => {
     const s = new Set<string>()
     database.tables.forEach((table) => {
@@ -480,7 +469,7 @@ export const SchemaDiagram = forwardRef<SVGSVGElement, SchemaDiagramProps>(
     return s
   }, [database])
 
-  // ── Render ────────────────────────────────────────────────────────────────
+  
   return (
     <div
       className="w-full h-full overflow-auto bg-background rounded-lg"
